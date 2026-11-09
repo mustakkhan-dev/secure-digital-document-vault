@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Digital Document Vault | AWS Cloud Architecture</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <div class="logo-badge">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <span>SecureVault</span>
+    </a>
+    <div class="nav-links">
+      <a href="#features" class="nav-link">Features</a>
+      <a href="#architecture" class="nav-link">Cloud Architecture</a>
+      <a href="#security" class="nav-link">Security Model</a>
+      <button class="btn btn-secondary btn-sm" id="navLoginBtn">Log In</button>
+      <button class="btn btn-primary btn-sm" id="navRegisterBtn">Get Started</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-badge">
+      <i class="fab fa-aws"></i> AWS Cloud-Native Zero-Trust Architecture
+    </div>
+    <h1>Enterprise Document Storage, <span>Cryptographically Secured.</span></h1>
+    <p>
+      Next-generation repository for critical academic credentials, identity certificates, and legal records.
+      Engineered with Amazon Cognito, private encrypted S3 storage, dynamic time-limited sharing tokens, and automated expiry alerts.
+    </p>
+    <div class="hero-cta">
+      <button class="btn btn-primary" id="heroStartBtn">
+        <i class="fas fa-lock"></i> Open My Vault
+      </button>
+      <a href="#architecture" class="btn btn-secondary">
+        <i class="fas fa-diagram-project"></i> View Architecture
+      </a>
+    </div>
+  </section>
+
+  <!-- Features Grid Section -->
+  <section id="features" class="section-wrapper">
+    <div class="section-header">
+      <span class="section-tag">Core Capabilities</span>
+      <h2 class="section-title">Designed for Zero-Trust Cloud Security</h2>
+      <p class="section-desc">Every layer is backed by AWS managed services, eliminating single points of failure and protecting sensitive documents.</p>
+    </div>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon" style="background: #eff6ff; color: #2563eb;">
+          <i class="fas fa-user-shield"></i>
+        </div>
+        <h3>Cognito Identity Auth</h3>
+        <p>Fine-grained user isolation powered by Amazon Cognito User Pools with cryptographic RS256 JWT claim verification on every API transaction.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background: #ecfdf5; color: #059669;">
+          <i class="fas fa-vault"></i>
+        </div>
+        <h3>Encrypted S3 Storage</h3>
+        <p>Documents are stored in a private Amazon S3 bucket with all Block Public Access settings enforced and KMS/AES256 server-side encryption.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background: #fffbeb; color: #d97706;">
+          <i class="fas fa-link"></i>
+        </div>
+        <h3>Revocable Share Links</h3>
+        <p>Create time-bounded share tokens. Overcomes presigned URL limitations by enabling instantaneous owner-controlled link revocation.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background: #fef2f2; color: #dc2626;">
+          <i class="fas fa-bell"></i>
+        </div>
+        <h3>Automated Expiry Alerts</h3>
+        <p>Amazon EventBridge triggers daily scans to notify users via Amazon SNS email notifications before passports or certificates expire.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background: #f5f3ff; color: #7c3aed;">
+          <i class="fas fa-fingerprint"></i>
+        </div>
+        <h3>Security Audit Logging</h3>
+        <p>Comprehensive event tracking recording logins, uploads, downloads, and unauthorized access attempts in Amazon DynamoDB.</p>
+      </div>
+
+      <div class="feature-card">
+        <div class="feature-icon" style="background: #e0f2fe; color: #0284c7;">
+          <i class="fas fa-code-branch"></i>
+        </div>
+        <h3>DevOps Automated CI/CD</h3>
+        <p>Infrastructure as Code codified in Terraform, with automated GitHub Actions testing and deployment via AWS OIDC authentication.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cloud Architecture Section -->
+  <section id="architecture" class="section-wrapper">
+    <div class="section-header">
+      <span class="section-tag">System Design</span>
+      <h2 class="section-title">AWS Serverless Architecture</h2>
+      <p class="section-desc">Decoupled, event-driven infrastructure ensuring high availability, sub-second latency, and zero server maintenance.</p>
+    </div>
+
+    <div class="arch-card">
+      <div class="arch-flow-grid">
+        <div class="arch-step-box">
+          <div class="arch-step-num">1</div>
+          <h4>Amazon Cognito</h4>
+          <p>Authenticates user identity, enforces password policies, and returns signed JWT tokens.</p>
+        </div>
+
+        <div class="arch-step-box">
+          <div class="arch-step-num">2</div>
+          <h4>Amazon API Gateway</h4>
+          <p>Validates JWT tokens via HTTP API authorizer and securely routes requests to microservices.</p>
+        </div>
+
+        <div class="arch-step-box">
+          <div class="arch-step-num">3</div>
+          <h4>AWS Lambda</h4>
+          <p>Executes stateless business logic for upload URLs, downloads, revocation, and logging.</p>
+        </div>
+
+        <div class="arch-step-box">
+          <div class="arch-step-num">4</div>
+          <h4>Amazon S3 Private</h4>
+          <p>Stores binary files with Block Public Access and AES256 server-side encryption enabled.</p>
+        </div>
+
+        <div class="arch-step-box">
+          <div class="arch-step-num">5</div>
+          <h4>Amazon DynamoDB</h4>
+          <p>Maintains document catalog, TTL share tokens, and tamper-evident audit logs.</p>
+        </div>
+      </div>
+
+      <div style="background: #0f172a; border-radius: var(--radius); padding: 1.5rem; color: #e2e8f0; font-family: var(--font-mono); font-size: 0.85rem; overflow-x: auto;">
+        <div style="color: #38bdf8; margin-bottom: 0.5rem; font-weight: 700;">// DIRECT-TO-S3 ZERO-TRUST UPLOAD FLOW</div>
+        <div>1. Client Browser &rarr; API Gateway (POST /documents/upload-url + Bearer JWT)</div>
+        <div>2. API Gateway Authorizer verifies Cognito RS256 signature &rarr; forwards to Lambda</div>
+        <div>3. Lambda validates filetype whitelist, verifies size &le; 10MB &rarr; generates Presigned S3 PUT URL (600s)</div>
+        <div>4. Lambda inserts metadata into DynamoDB `Vault_Documents` table</div>
+        <div>5. Client Browser transfers binary directly to S3 via HTTP PUT (zero RAM overhead on Lambda)</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Model Section -->
+  <section id="security" class="section-wrapper">
+    <div class="section-header">
+      <span class="section-tag">Security & Compliance</span>
+      <h2 class="section-title">Defense-in-Depth Security Matrix</h2>
+      <p class="section-desc">Comparison of potential cloud security threat vectors and our implemented technical mitigations.</p>
+    </div>
+
+    <div class="security-table-wrapper">
+      <table class="security-table">
+        <thead>
+          <tr>
+            <th>Security Layer</th>
+            <th>Potential Threat Vector</th>
+            <th>Vault Mitigation Mechanism</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Authentication</strong></td>
+            <td>Credential Stuffing / Weak Passwords</td>
+            <td>Cognito User Pool with mandatory email OTP verification and strict complexity rules.</td>
+            <td><span class="badge badge-success"><i class="fas fa-shield-check"></i> Enforced</span></td>
+          </tr>
+          <tr>
+            <td><strong>Authorization</strong></td>
+            <td>BOLA / Insecure Direct Object References (IDOR)</td>
+            <td>Server-side ownership verification extracting immutable `sub` claim from verified JWT context.</td>
+            <td><span class="badge badge-success"><i class="fas fa-shield-check"></i> Enforced</span></td>
+          </tr>
+          <tr>
+            <td><strong>Data Storage</strong></td>
+            <td>Accidental S3 Public Bucket Exposure</td>
+            <td>Amazon S3 Block Public Access (all 4 flags active) + Server-Side Encryption (`AES256`).</td>
+            <td><span class="badge badge-success"><i class="fas fa-shield-check"></i> Enforced</span></td>
+          </tr>
+          <tr>
+            <td><strong>Document Sharing</strong></td>
+            <td>Irreversible Leaked Presigned Links</td>
+            <td>Opaque DynamoDB token with millisecond timestamp check and instant owner revocation flag.</td>
+            <td><span class="badge badge-success"><i class="fas fa-shield-check"></i> Enforced</span></td>
+          </tr>
+          <tr>
+            <td><strong>Auditing</strong></td>
+            <td>Repudiation / Untracked Access</td>
+            <td>`Vault_ActivityLogs` records client IP, user agent, timestamp, and status for all operations.</td>
+            <td><span class="badge badge-success"><i class="fas fa-shield-check"></i> Enforced</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Auth Modal -->
+  <div class="modal-overlay" id="authModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">Access Your Vault</h3>
+        <button class="modal-close" id="closeModalBtn">&times;</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="student@university.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="••••••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" id="loginSubmitBtn">
+          <i class="fas fa-sign-in-alt"></i> Sign In
+        </button>
+        <p style="text-align: center; margin-top: 1.25rem; font-size: 0.9rem; color: var(--text-muted);">
+          Don't have an account? <a href="#" id="switchToRegister" style="color: var(--primary); font-weight: 700;">Register here</a>
+        </p>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" style="display: none;">
+        <div class="form-group">
+          <label class="form-label" for="regName">Full Name</label>
+          <input type="text" id="regName" class="form-control" placeholder="Mustak Khan" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="student@university.edu" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Password (Min 8 chars, 1 uppercase, 1 digit)</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="SecureVault@2026" required minlength="8">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 0.5rem;" id="registerSubmitBtn">
+          <i class="fas fa-user-plus"></i> Create Vault Account
+        </button>
+        <p style="text-align: center; margin-top: 1.25rem; font-size: 0.9rem; color: var(--text-muted);">
+          Already registered? <a href="#" id="switchToLogin" style="color: var(--primary); font-weight: 700;">Sign in here</a>
+        </p>
+      </form>
+
+      <!-- Verification Form -->
+      <form id="verifyForm" style="display: none;">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+          Enter the 6-digit confirmation code sent to your email by Amazon Cognito:
+        </p>
+        <div class="form-group">
+          <label class="form-label" for="verifyCode">Confirmation Code</label>
+          <input type="text" id="verifyCode" class="form-control" placeholder="123456" required maxlength="6" style="text-align: center; font-size: 1.5rem; letter-spacing: 0.25em;">
+        </div>
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          <i class="fas fa-check-circle"></i> Verify & Activate Account
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toastContainer"></div>
+
+  <!-- Footer -->
+  <footer>
+    <p>Secure Digital Document Vault &copy; 2026. Department of Computer Science & Engineering. Engineered for AWS Cloud Security.</p>
+  </footer>
+
+  <script type="module">
+    import { register, confirmRegistration, login, isAuthenticated } from './js/auth.js';
+
+    // Redirect if already logged in
+    if (isAuthenticated()) {
+      window.location.href = 'dashboard.html';
+    }
+
+    const modal = document.getElementById('authModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const verifyForm = document.getElementById('verifyForm');
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> <span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+
+    function openModal(mode = 'login') {
+      modal.classList.add('active');
+      if (mode === 'login') {
+        modalTitle.textContent = 'Sign In to Your Vault';
+        loginForm.style.display = 'block';
+        registerForm.style.display = 'none';
+        verifyForm.style.display = 'none';
+      } else if (mode === 'register') {
+        modalTitle.textContent = 'Create New Vault Account';
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'block';
+        verifyForm.style.display = 'none';
+      } else if (mode === 'verify') {
+        modalTitle.textContent = 'Confirm Your Email';
+        loginForm.style.display = 'none';
+        registerForm.style.display = 'none';
+        verifyForm.style.display = 'block';
+      }
+    }
+
+    document.getElementById('navLoginBtn').onclick = () => openModal('login');
+    document.getElementById('navRegisterBtn').onclick = () => openModal('register');
+    document.getElementById('heroStartBtn').onclick = () => openModal('login');
+    document.getElementById('closeModalBtn').onclick = () => modal.classList.remove('active');
+    document.getElementById('switchToRegister').onclick = (e) => { e.preventDefault(); openModal('register'); };
+    document.getElementById('switchToLogin').onclick = (e) => { e.preventDefault(); openModal('login'); };
+
+    let pendingVerificationEmail = '';
+
+    loginForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const pass = document.getElementById('loginPassword').value;
+      const btn = document.getElementById('loginSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+      try {
+        await login(email, pass);
+        showToast('Login successful! Redirecting...', 'success');
+        setTimeout(() => window.location.href = 'dashboard.html', 800);
+      } catch (err) {
+        showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-sign-in-alt"></i> Sign In';
+      }
+    };
+
+    registerForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      const pass = document.getElementById('regPassword').value;
+      const btn = document.getElementById('registerSubmitBtn');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating Account...';
+
+      try {
+        pendingVerificationEmail = email;
+        const res = await register(email, pass, name);
+        showToast('Verification code dispatched to your email!', 'success');
+        openModal('verify');
+      } catch (err) {
+        showToast(err.message, 'error');
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Vault Account';
+      }
+    };
+
+    verifyForm.onsubmit = async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('verifyCode').value;
+      try {
+        await confirmRegistration(pendingVerificationEmail, code);
+        showToast('Account successfully verified! Please log in.', 'success');
+        openModal('login');
+      } catch (err) {
+        showToast(err.message, 'error');
+      }
+    };
+  </script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard | Secure Digital Document Vault</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar">
+    <a href="dashboard.html" class="logo">
+      <div class="logo-badge">
+        <i class="fas fa-shield-halved"></i>
+      </div>
+      <span>SecureVault</span>
+    </a>
+    <div class="nav-links">
+      <a href="dashboard.html" class="nav-link active">Documents</a>
+      <a href="activity.html" class="nav-link">Security Activity</a>
+      <div style="background: var(--bg-subtle); padding: 0.35rem 0.85rem; border-radius: var(--radius-full); font-size: 0.85rem; color: var(--text-muted); font-weight: 600; display: flex; align-items: center; gap: 0.4rem;">
+        <i class="fas fa-circle-user" style="color: var(--primary);"></i>
+        <span id="userGreeting"></span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <!-- Dashboard Container -->
+  <main class="dashboard-container">
+    <!-- Welcome Header Banner -->
+    <div class="welcome-banner">
+      <div class="welcome-text">
+        <h2>Personal Document Vault</h2>
+        <p>
+          <i class="fas fa-shield-check"></i>
+          Encrypted with AWS KMS &middot; Protected with Cognito Zero-Trust IAM
+        </p>
+      </div>
+      <button class="quick-upload-btn" id="bannerUploadBtn">
+        <i class="fas fa-cloud-arrow-up"></i>
+        <span>Upload Document</span>
+      </button>
+    </div>
+
+    <!-- Stat Cards -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-info">
+          <h3>Total Documents</h3>
+          <p id="statTotalDocs">0</p>
+        </div>
+        <div class="stat-icon blue">
+          <i class="fas fa-file-shield"></i>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-info">
+          <h3>Approaching Expiry</h3>
+          <p id="statExpiringDocs" style="color: var(--warning);">0</p>
+        </div>
+        <div class="stat-icon yellow">
+          <i class="fas fa-calendar-xmark"></i>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-info">
+          <h3>S3 Encryption</h3>
+          <p style="font-size: 1.15rem; color: var(--accent); margin-top: 0.4rem;">
+            <i class="fas fa-lock"></i> KMS / AES-256
+          </p>
+        </div>
+        <div class="stat-icon green">
+          <i class="fas fa-key"></i>
+        </div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-info">
+          <h3>Bucket Protection</h3>
+          <p style="font-size: 1.15rem; color: var(--accent); margin-top: 0.4rem;">
+            <i class="fas fa-shield-halved"></i> Blocked (Zero-Trust)
+          </p>
+        </div>
+        <div class="stat-icon blue">
+          <i class="fas fa-cloud"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls Row -->
+    <div class="table-controls">
+      <div class="search-filter-group">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search documents by name or category...">
+        <select id="categoryFilter" class="form-control" style="max-width: 180px;">
+          <option value="ALL">All Categories</option>
+          <option value="Education">Education</option>
+          <option value="Identity">Identity</option>
+          <option value="Financial">Financial</option>
+          <option value="Medical">Medical</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div>
+        <button class="btn btn-primary" id="openUploadModalBtn">
+          <i class="fas fa-cloud-arrow-up"></i> Upload Document
+        </button>
+      </div>
+    </div>
+
+    <!-- Documents Table -->
+    <div class="table-card">
+      <table class="custom-table">
+        <thead>
+          <tr>
+            <th>Document Name</th>
+            <th>Category</th>
+            <th>Size</th>
+            <th>Uploaded Date</th>
+            <th>Expiration</th>
+            <th>Status</th>
+            <th style="text-align: right;">Actions</th>
+          </tr>
+        </thead>
+        <tbody id="documentsTableBody">
+          <tr>
+            <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 3rem;">
+              <i class="fas fa-spinner fa-spin"></i> Loading encrypted vault documents...
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <!-- Upload Modal -->
+  <div class="modal-overlay" id="uploadModal">
+    <div class="modal-content" style="max-width: 560px;">
+      <div class="modal-header">
+        <h3>Secure Document Upload</h3>
+        <button class="modal-close" id="closeUploadModalBtn">&times;</button>
+      </div>
+
+      <form id="uploadForm">
+        <!-- Drag and drop zone -->
+        <div class="dropzone" id="dropzone">
+          <i class="fas fa-cloud-arrow-up dropzone-icon"></i>
+          <p style="font-weight: 700; margin-bottom: 0.35rem; font-size: 1.05rem; color: var(--text-main);">
+            Drag & drop your file here, or click to browse
+          </p>
+          <p style="font-size: 0.825rem; color: var(--text-muted);">
+            Permitted formats: PDF, PNG, JPG, DOCX, TXT (Maximum 10MB)
+          </p>
+          <input type="file" id="fileInput" style="display: none;" required>
+          <div id="selectedFileInfo" style="margin-top: 1rem; font-weight: 700; color: var(--primary); display: none; background: white; padding: 0.5rem 1rem; border-radius: var(--radius); border: 1px solid #bfdbfe;"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="docCategory">Document Category</label>
+          <select id="docCategory" class="form-control" required>
+            <option value="Education">Educational Certificate / Transcript</option>
+            <option value="Identity">Identity Document (Passport, License, Aadhar)</option>
+            <option value="Financial">Financial Record</option>
+            <option value="Medical">Medical Report</option>
+            <option value="Other">Other Record</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="docExpiry">Document Expiration Date (Optional)</label>
+          <input type="date" id="docExpiry" class="form-control">
+          <small style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.35rem; display: block;">
+            Set an expiration date to receive automated alerts via EventBridge & SNS.
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="docDescription">Description / Notes (Optional)</label>
+          <input type="text" id="docDescription" class="form-control" placeholder="e.g. Internship Completion Certificate">
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="uploadSubmitBtn" style="width: 100%;">
+          <i class="fas fa-lock"></i> Encrypt & Upload to S3
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Share Link Modal -->
+  <div class="modal-overlay" id="shareModal">
+    <div class="modal-content" style="max-width: 520px;">
+      <div class="modal-header">
+        <h3>Generate Time-Limited Share Link</h3>
+        <button class="modal-close" id="closeShareModalBtn">&times;</button>
+      </div>
+
+      <div id="shareSetupSection">
+        <p style="color: var(--text-muted); font-size: 0.925rem; margin-bottom: 1.5rem; line-height: 1.6;">
+          Generate a secure, revocable token for external access. The recipient can download the file temporarily without exposing your S3 bucket.
+        </p>
+
+        <div class="form-group">
+          <label class="form-label" for="shareDuration">Access Duration</label>
+          <select id="shareDuration" class="form-control">
+            <option value="15">15 Minutes</option>
+            <option value="60" selected>1 Hour</option>
+            <option value="360">6 Hours</option>
+            <option value="1440">24 Hours (Maximum)</option>
+          </select>
+        </div>
+
+        <button class="btn btn-primary" id="generateShareBtn" style="width: 100%;">
+          <i class="fas fa-key"></i> Generate Secure Link
+        </button>
+      </div>
+
+      <div id="shareResultSection" style="display: none; margin-top: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Temporary Sharing URL</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input type="text" id="shareUrlInput" class="form-control" readonly style="background: #f8fafc; font-family: var(--font-mono); font-size: 0.85rem;">
+            <button class="btn btn-secondary" id="copyShareBtn">
+              <i class="fas fa-copy"></i>
+            </button>
+          </div>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--accent); margin-bottom: 1.25rem; font-weight: 600;">
+          <i class="fas fa-clock"></i> Expires at: <span id="shareExpiryTime"></span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <footer>
+    <p>Secure Digital Document Vault &copy; 2026. AWS Certified Cloud Security Architecture.</p>
+  </footer>
+
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>

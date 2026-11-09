@@ -1,0 +1,46 @@
+name: Continuous Deployment via Terraform & AWS OIDC
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/**'
+      - 'terraform/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write # Mandatory for requesting the OIDC JWT token
+  contents: read
+
+jobs:
+  deploy-infrastructure:
+    name: Provision & Update Cloud Infrastructure
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform CLI
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.7.5
+
+      # Secure AWS authentication via GitHub OIDC without long-lived access keys
+      - name: Configure AWS Credentials with OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+          aws-region: ap-south-1
+
+      - name: Terraform Init
+        working-directory: terraform
+        run: terraform init
+
+      - name: Terraform Validate
+        working-directory: terraform
+        run: terraform validate
+
+      - name: Terraform Plan & Apply
+        working-directory: terraform
+        run: terraform apply -auto-approve

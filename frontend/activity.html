@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Security Activity & Audit Trail | SecureVault</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <nav class="navbar">
+    <a href="dashboard.html" class="logo">
+      <i class="fas fa-shield-halved"></i>
+      <span>SecureVault</span>
+    </a>
+    <div class="nav-links">
+      <a href="dashboard.html" class="nav-link">Documents</a>
+      <a href="activity.html" class="nav-link active">Security Activity</a>
+      <button class="btn btn-secondary btn-sm" id="logoutBtn">
+        <i class="fas fa-sign-out-alt"></i> Logout
+      </button>
+    </div>
+  </nav>
+
+  <main class="dashboard-container">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+      <div>
+        <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--text-main);">Security Audit Log</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem;">
+          Tamper-evident record of document operations, sharing events, and authorization checks.
+        </p>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="refreshBtn">
+        <i class="fas fa-arrows-rotate"></i> Refresh Log
+      </button>
+    </div>
+
+    <div class="activity-list" id="activityContainer">
+      <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+        <i class="fas fa-spinner fa-spin"></i> Loading security records...
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>Secure Digital Document Vault &copy; 2026. AWS Certified Cloud Security Architecture.</p>
+  </footer>
+
+  <script type="module">
+    import { isAuthenticated, logout } from './js/auth.js';
+    import { fetchActivityLogs } from './js/api.js';
+
+    if (!isAuthenticated()) {
+      window.location.href = 'index.html';
+    }
+
+    document.getElementById('logoutBtn').onclick = () => logout();
+    const container = document.getElementById('activityContainer');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    function getEventIcon(type, status) {
+      if (status === 'FAILED') return { icon: 'fa-triangle-exclamation', color: '#ef4444', bg: '#fee2e2' };
+      switch (type) {
+        case 'LOGIN': return { icon: 'fa-right-to-bracket', color: '#2563eb', bg: '#eff6ff' };
+        case 'UPLOAD':
+        case 'UPLOAD_INITIATED': return { icon: 'fa-cloud-arrow-up', color: '#059669', bg: '#ecfdf5' };
+        case 'DOWNLOAD': return { icon: 'fa-download', color: '#0284c7', bg: '#e0f2fe' };
+        case 'SHARE_LINK_CREATED': return { icon: 'fa-share-nodes', color: '#d97706', bg: '#fffbeb' };
+        case 'SHARE_REVOKED': return { icon: 'fa-ban', color: '#dc2626', bg: '#fef2f2' };
+        case 'DOC_DELETED': return { icon: 'fa-trash', color: '#dc2626', bg: '#fef2f2' };
+        case 'SHARED_DOC_ACCESSED': return { icon: 'fa-eye', color: '#7c3aed', bg: '#f5f3ff' };
+        default: return { icon: 'fa-shield', color: '#64748b', bg: '#f1f5f9' };
+      }
+    }
+
+    async function loadLogs() {
+      container.innerHTML = `
+        <div style="text-align: center; color: var(--text-muted); padding: 3rem;">
+          <i class="fas fa-spinner fa-spin"></i> Loading security records...
+        </div>
+      `;
+
+      try {
+        const res = await fetchActivityLogs();
+        const logs = res.activities || [];
+
+        if (logs.length === 0) {
+          container.innerHTML = `
+            <div style="text-align: center; color: var(--text-muted); padding: 3rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);">
+              <i class="fas fa-clipboard-check" style="font-size: 2.5rem; color: #cbd5e1; margin-bottom: 0.5rem; display: block;"></i>
+              No activity records logged yet.
+            </div>
+          `;
+          return;
+        }
+
+        container.innerHTML = logs.map(item => {
+          const cfg = getEventIcon(item.eventType, item.status);
+          const detailStr = item.details ? JSON.stringify(item.details).replace(/[{}"]/g, '').replace(/,/g, ' | ') : '';
+          return `
+            <div class="activity-item">
+              <div class="stat-icon" style="background: ${cfg.bg}; color: ${cfg.color}; width: 42px; height: 42px; font-size: 1.15rem;">
+                <i class="fas ${cfg.icon}"></i>
+              </div>
+              <div style="flex: 1;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                  <strong style="color: var(--text-main); font-size: 0.95rem;">${item.eventType}</strong>
+                  <span class="badge ${item.status === 'SUCCESS' ? 'badge-success' : 'badge-danger'}">${item.status}</span>
+                </div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.25rem;">
+                  ${detailStr}
+                </div>
+                <div class="activity-time">
+                  <i class="far fa-clock"></i> ${new Date(item.timestamp.split('#')[0]).toLocaleString()} &nbsp;&bull;&nbsp;
+                  <i class="fas fa-network-wired"></i> IP: ${item.ipAddress || '127.0.0.1'}
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+      } catch (err) {
+        container.innerHTML = `<div style="color: var(--danger); padding: 2rem; text-align: center;">${err.message}</div>`;
+      }
+    }
+
+    refreshBtn.onclick = loadLogs;
+    loadLogs();
+  </script>
+</body>
+</html>

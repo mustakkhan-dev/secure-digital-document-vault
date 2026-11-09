@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Shared Secure Document | SecureVault</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .shared-box {
+      max-width: 580px;
+      margin: 4rem auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem;
+      box-shadow: var(--shadow-lg);
+      text-align: center;
+    }
+    .countdown-timer {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 1.25rem 0;
+      font-variant-numeric: tabular-nums;
+    }
+  </style>
+</head>
+<body>
+  <!-- Minimal Navbar -->
+  <nav class="navbar">
+    <a href="index.html" class="logo">
+      <i class="fas fa-shield-halved"></i>
+      <span>SecureVault</span>
+    </a>
+  </nav>
+
+  <div class="shared-box" id="sharedContainer">
+    <div id="loadingState">
+      <i class="fas fa-circle-notch fa-spin" style="font-size: 2.5rem; color: var(--primary); margin-bottom: 1rem;"></i>
+      <h3>Validating Secure Share Token...</h3>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">Checking cryptographic signature and expiry status on AWS Lambda.</p>
+    </div>
+
+    <div id="successState" style="display: none;">
+      <i class="fas fa-file-shield" style="font-size: 3rem; color: var(--accent); margin-bottom: 1rem;"></i>
+      <h2 id="docTitle" style="font-size: 1.5rem; margin-bottom: 0.5rem;">Document Name</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem;">
+        You have been granted temporary, read-only access to this verified document.
+      </p>
+
+      <div class="countdown-timer" id="timerDisplay">--:--:--</div>
+      <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1.75rem;">Time remaining before this link expires</p>
+
+      <a id="downloadBtn" href="#" class="btn btn-primary" style="padding: 0.75rem 2rem; font-size: 1.05rem;" download>
+        <i class="fas fa-download"></i> Download Document Securely
+      </a>
+    </div>
+
+    <div id="errorState" style="display: none;">
+      <i class="fas fa-triangle-exclamation" style="font-size: 3rem; color: var(--danger); margin-bottom: 1rem;"></i>
+      <h2 style="font-size: 1.4rem; color: var(--danger); margin-bottom: 0.5rem;">Access Denied / Link Expired</h2>
+      <p id="errorMessage" style="color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        This sharing link is no longer valid or has been revoked by the owner.
+      </p>
+      <a href="index.html" class="btn btn-secondary">
+        <i class="fas fa-home"></i> Return to Homepage
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    <p>Secure Digital Document Vault &copy; 2026. Zero-Trust S3 Bucket Protection.</p>
+  </footer>
+
+  <script type="module">
+    import { resolveShareLink } from './js/api.js';
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const shareId = urlParams.get('shareId');
+
+    const loadingState = document.getElementById('loadingState');
+    const successState = document.getElementById('successState');
+    const errorState = document.getElementById('errorState');
+    const errorMessage = document.getElementById('errorMessage');
+    const docTitle = document.getElementById('docTitle');
+    const timerDisplay = document.getElementById('timerDisplay');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    if (!shareId) {
+      showError('No share token was provided in the URL request.');
+    } else {
+      resolveToken();
+    }
+
+    async function resolveToken() {
+      try {
+        const data = await resolveShareLink(shareId);
+        showSuccess(data);
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    function showSuccess(data) {
+      loadingState.style.display = 'none';
+      errorState.style.display = 'none';
+      successState.style.display = 'block';
+
+      docTitle.textContent = data.fileName;
+      downloadBtn.href = data.downloadUrl;
+
+      // Start countdown timer
+      const expiresAt = new Date(data.expiresAt).getTime();
+      const interval = setInterval(() => {
+        const now = Date.now();
+        const diff = expiresAt - now;
+
+        if (diff <= 0) {
+          clearInterval(interval);
+          showError('This share link has expired. Downloads are now disabled.');
+          return;
+        }
+
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+        timerDisplay.textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+      }, 1000);
+    }
+
+    function showError(msg) {
+      loadingState.style.display = 'none';
+      successState.style.display = 'none';
+      errorState.style.display = 'block';
+      errorMessage.textContent = msg;
+    }
+  </script>
+</body>
+</html>

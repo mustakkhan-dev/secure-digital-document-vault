@@ -1,0 +1,19 @@
+{
+  "name": "secure-doc-vault-backend",
+  "version": "1.0.0",
+  "description": "Serverless backend functions for Secure Digital Document Vault",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.758.0",
+    "@aws-sdk/client-dynamodb": "^3.758.0",
+    "@aws-sdk/client-s3": "^3.758.0",
+    "@aws-sdk/client-sns": "^3.758.0",
+    "@aws-sdk/lib-dynamodb": "^3.758.0",
+    "@aws-sdk/s3-request-presigner": "^3.758.0"
+  },
+  "devDependencies": {}
+}
