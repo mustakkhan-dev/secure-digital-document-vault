@@ -79,7 +79,7 @@ The project includes an **out-of-the-box Interactive Demo Mode** that allows you
 
 1. Open PowerShell and navigate to the project root:
    ```powershell
-   cd C:\Users\Mustak\.gemini\antigravity\scratch\secure-doc-vault
+   cd C:\Users\Mustak\secure-doc-vault
    ```
 
 2. Run the automated backend test suite:
@@ -120,7 +120,7 @@ aws configure
 ### Step 2: Initialize & Apply Terraform
 Navigate to the `terraform/` directory:
 ```powershell
-cd C:\Users\Mustak\.gemini\antigravity\scratch\secure-doc-vault\terraform
+cd C:\Users\Mustak\secure-doc-vault\terraform
 
 # Initialize Terraform providers
 terraform init
@@ -171,23 +171,14 @@ export const CONFIG = {
 
 ---
 
-## 💰 Cost Breakdown (AWS Free Tier Compliance)
-
-- **Cognito**: 50,000 monthly active users (Permanently Free).
-- **Lambda**: 1,000,000 invocations / month (Permanently Free).
-- **DynamoDB**: 25 GB storage & 25 RCU/WCU (Permanently Free).
-- **S3**: 5 GB standard storage (12 Months Free).
-- **API Gateway**: 1,000,000 requests / month (12 Months Free).
-- **SNS**: 1,000 email dispatches / month (Permanently Free).
-
-> **Estimated Monthly Cost**: **$0.00** for typical academic usage and demonstrations.
-
----
-
 ## 🧹 Infrastructure Teardown (Clean-Up)
 
-To avoid any unexpected charges after your college presentation:
+To avoid any unexpected charges after your presentation:
 ```powershell
-cd C:\Users\Mustak\.gemini\antigravity\scratch\secure-doc-vault\terraform
+cd C:\Users\Mustak\secure-doc-vault\terraform
 terraform destroy -auto-approve
 ```
+
+## 📄 License 
+
+Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for details.
