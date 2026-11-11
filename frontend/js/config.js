@@ -1,17 +1,17 @@
 // Central Application Configuration
-// Generated and connected to live AWS Cloud Infrastructure
+// Configure your AWS endpoints or use Demo Mode for local testing
 export const CONFIG = {
-  // AWS Region
+  // AWS Region (e.g. us-east-1, ap-south-1)
   awsRegion: 'us-east-1',
 
   // Amazon Cognito Configuration
   cognito: {
-    userPoolId: 'us-east-1_68PbOcwoU',
-    clientId: 'd1t4b7itjtgo0u20kpmrjdmip',
+    userPoolId: 'us-east-1_YOUR_USER_POOL_ID',
+    clientId: 'YOUR_COGNITO_CLIENT_ID',
   },
 
   // API Gateway Base URL
-  apiBaseUrl: 'https://bya5qgifi1.execute-api.us-east-1.amazonaws.com/prod',
+  apiBaseUrl: 'https://YOUR_API_GATEWAY_ID.execute-api.us-east-1.amazonaws.com/prod',
 
   // Allowed file settings
   maxFileSizeMB: 10,
@@ -23,6 +23,6 @@ export const CONFIG = {
     'text/plain',
   ],
 
-  // Live AWS Cloud production mode
-  enableDemoMode: false,
+  // Set to true for offline demo evaluation, or false when connected to deployed AWS infrastructure
+  enableDemoMode: true,
 };

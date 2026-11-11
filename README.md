@@ -7,6 +7,14 @@ Built with **Amazon Cognito**, **Amazon S3 (Private & Encrypted)**, **Amazon Dyn
 
 ---
 
+## 🖥️ Application Preview
+
+<p align="center">
+  <img src="docs/screenshots/landing_page.jpg" alt="Secure Digital Document Vault Landing Page" width="920" style="border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);" />
+</p>
+
+---
+
 ## 🏛️ System Architecture
 
 ```mermaid
